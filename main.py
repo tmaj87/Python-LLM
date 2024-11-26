@@ -8,23 +8,18 @@ from const import (
     INTERNAL_CONV_SUMMARY,
 )
 
-AZURE_OPENAI_API_KEY = os.getenv("AZURE_OPENAI_API_KEY")
-OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL")
-OPENAI_API_VERSION = os.getenv("OPENAI_API_VERSION")
 
-
-def reflection_message(recipient, _, sender):
+def reflection_message(recipient, _, sender) -> str:
     return f"""Review the following task solution idea. 
             \n\n {recipient.chat_messages_for_summary(sender)[-1]['content']}"""
 
 
 if __name__ == "__main__":
-    lightweight_llm_config = {
-        "model": OPENAI_MODEL,
-        "api_key": AZURE_OPENAI_API_KEY,
-        "base_url": OPENAI_BASE_URL,
-        "api_version": OPENAI_API_VERSION,
+    config = {
+        "model": os.getenv("OPENAI_MODEL"),
+        "api_key": os.getenv("AZURE_OPENAI_API_KEY"),
+        "base_url": os.getenv("OPENAI_BASE_URL"),
+        "api_version": os.getenv("OPENAI_API_VERSION"),
         "api_type": "azure",
     }
 
@@ -35,11 +30,11 @@ if __name__ == "__main__":
     Find that opportunity! 
     """
 
-    supervisor = get_supervisor(lightweight_llm_config)
-    lead = get_lead(lightweight_llm_config)
-    sme = get_sme(lightweight_llm_config)
-    dev = get_dev(lightweight_llm_config)
-    qa = get_qa(lightweight_llm_config)
+    supervisor = get_supervisor(config)
+    lead = get_lead(config)
+    sme = get_sme(config)
+    dev = get_dev(config)
+    qa = get_qa(config)
 
     # str or dict or None
     replay = supervisor.generate_reply(messages=[{"content": task, "role": "user"}])
