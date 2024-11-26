@@ -22,26 +22,21 @@ if __name__ == "__main__":
         "api_version": os.getenv("OPENAI_API_VERSION"),
         "api_type": "azure",
     }
-
+    supervisor = get_supervisor(config)
+    lead = get_lead(config)
+    sme = get_sme(config)
+    dev = get_dev(config)
+    qa = get_qa(config)
     task = """
     We are ending year 2024 and there are no approaching contracts to fulfill in the next yet.
     We need to try to find a way to sustain our revenuer growth, an investment to put money into, a partner in US or UK to sign contract with.
     Put all your effort into it, as our and our families lives depend on it.
     Find that opportunity! 
     """
-
-    supervisor = get_supervisor(config)
-    lead = get_lead(config)
-    sme = get_sme(config)
-    dev = get_dev(config)
-    qa = get_qa(config)
-
-    # str or dict or None
     replay = supervisor.generate_reply(messages=[{"content": task, "role": "user"}])
-
     chat_queue = [
         {
-            "recipient": qa,
+            "recipient": sme,
             "message": reflection_message,
             "summary_method": "reflection_with_llm",
             "summary_args": {"summary_prompt": SUMMARY_PROMPT},
@@ -55,7 +50,7 @@ if __name__ == "__main__":
             "max_turns": INTERNAL_CONV_REPLAYS,
         },
         {
-            "recipient": sme,
+            "recipient": qa,
             "message": reflection_message,
             "summary_method": "reflection_with_llm",
             "summary_args": {"summary_prompt": SUMMARY_PROMPT},
@@ -67,13 +62,10 @@ if __name__ == "__main__":
             "max_turns": INTERNAL_CONV_REPLAYS,
         },
     ]
-
     lead.register_nested_chats(
         chat_queue=chat_queue,
         trigger=supervisor,
         # use_async
     )
-
     res = lead.initiate_chat(recipient=supervisor, message=task, max_turns=REPLAYS)
-
     print(res.summary)
