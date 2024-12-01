@@ -1,4 +1,4 @@
-from agents import get_supervisor, get_lead, get_dev, get_qa, get_sme
+from agents import get_owner, get_lead, get_dev, get_qa, get_sme
 from const import (
     REPLAYS,
     INTERNAL_CONV_REPLAYS,
@@ -15,12 +15,12 @@ def reflection_message(recipient, _, sender) -> str:
 
 def process(task: str):
     config = get_config()
-    supervisor = get_supervisor(config)
+    owner = get_owner(config)
     lead = get_lead(config)
     sme = get_sme(config)
     dev = get_dev(config)
     qa = get_qa(config)
-    replay = supervisor.generate_reply(messages=[{"content": task, "role": "user"}])
+    replay = owner.generate_reply(messages=[{"content": task, "role": "user"}])
     chat_queue = [
         {
             "recipient": sme,
@@ -44,17 +44,17 @@ def process(task: str):
             "max_turns": INTERNAL_CONV_REPLAYS,
         },
         {
-            "recipient": supervisor,
+            "recipient": lead,
             "message": INTERNAL_CONV_SUMMARY,
             "max_turns": INTERNAL_CONV_REPLAYS,
         },
     ]
     lead.register_nested_chats(
         chat_queue=chat_queue,
-        trigger=supervisor,
+        trigger=owner,
         # use_async
     )
-    return lead.initiate_chat(recipient=supervisor, message=task, max_turns=REPLAYS)
+    return lead.initiate_chat(recipient=owner, message=task, max_turns=REPLAYS)
 
 
 if __name__ == "__main__":

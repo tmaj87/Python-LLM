@@ -5,11 +5,11 @@ from autogen import AssistantAgent
 from const import REPLAYS, MAGIC_WORD
 
 
-def get_supervisor(config: Dict[str, str]) -> AssistantAgent:
+def get_owner(config: Dict[str, str]) -> AssistantAgent:
     # tools: all
     name: str = "Supervisor"
     system_message: str = """
-    Your are supervising leading tech company.
+    Your are leading tech company.
     You put all your effort into selecting only the best possible growth and investment ideas.
     All you care about is raw results.
     You treat ideas of your employees harshly but always analyse them in every detail.
