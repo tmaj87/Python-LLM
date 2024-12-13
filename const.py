@@ -1,6 +1,6 @@
 MAGIC_WORD: str = "we got it boys!"
 REPLAYS: int = 2
-INTERNAL_CONV_REPLAYS: int = 1
+INTERNAL_CONV_REPLAYS: int = 2
 SUMMARY_PROMPT: str = """
 Perform complete review on the topic.
 Include code.

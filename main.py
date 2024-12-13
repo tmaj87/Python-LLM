@@ -1,3 +1,5 @@
+from autogen import ChatResult
+
 from agents import get_owner, get_lead, get_dev, get_qa, get_sme
 from const import (
     REPLAYS,
@@ -8,20 +10,24 @@ from const import (
 from utils import get_config
 
 
-def reflection_message(recipient, _, sender) -> str:
+def reflection_message(recipient, messages, sender, config) -> str:
     return f"""Review the following task solution idea. 
             \n\n {recipient.chat_messages_for_summary(sender)[-1]['content']}"""
 
 
-def process(task: str):
+def process(task: str) -> ChatResult:
     config = get_config()
     owner = get_owner(config)
     lead = get_lead(config)
     sme = get_sme(config)
     dev = get_dev(config)
     qa = get_qa(config)
-    replay = owner.generate_reply(messages=[{"content": task, "role": "user"}])
     chat_queue = [
+        {
+            "recipient": lead,
+            "message": INTERNAL_CONV_SUMMARY,
+            "max_turns": INTERNAL_CONV_REPLAYS,
+        },
         {
             "recipient": sme,
             "message": reflection_message,
@@ -54,7 +60,8 @@ def process(task: str):
         trigger=owner,
         # use_async
     )
-    return lead.initiate_chat(recipient=owner, message=task, max_turns=REPLAYS)
+    replay = owner.generate_reply(messages=[{"content": task, "role": "user"}])
+    return owner.initiate_chat(recipient=lead, message=replay, max_turns=REPLAYS)
 
 
 if __name__ == "__main__":
@@ -66,4 +73,5 @@ if __name__ == "__main__":
     Find that opportunity! 
     """
     )
+
     print(result.summary)

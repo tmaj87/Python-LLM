@@ -25,14 +25,14 @@ def retrieve(collection: Collection, prompt: str):
     return results["documents"][0]
 
 
-def __main__():
+if __name__ == "__main__":
     client = chromadb.Client()
     collection = client.create_collection(name="tomaj")
     store(collection)
-    prompt = "Who Tomasz Maj is?"
+    prompt = "What language does he know?"
     data = retrieve(collection, prompt)
     output = ollama.generate(
-        model="llama2",
+        model="llama3.2",
         prompt=f"Using this data: {data}. Respond to this prompt: {prompt}",
     )
-    print(output)
+    print(output.response)
