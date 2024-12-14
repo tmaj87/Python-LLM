@@ -1,3 +1,4 @@
+import json
 import os
 
 from bs4 import BeautifulSoup
@@ -9,25 +10,32 @@ from langchain_community.tools.playwright.utils import create_async_playwright_b
 from langchain_core.documents import Document
 from langchain_ollama import OllamaLLM
 
+from prompts import llm
+
 os.environ["USER_AGENT"] = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0"
 )
-search = DuckDuckGoSearchResults(backend="news", output_format="list", num_results=3)
+search = DuckDuckGoSearchResults(backend="news", output_format="list", num_results=2)
 
 
-def v1() -> list[Document]:
+def v1() -> str:
     links: list[str] = []
-    result: list[Document] = []
-    for obj in search.invoke("crypto finance"):
+    result: list[dict[str, str]] = []
+    for obj in search.invoke("crypto finance today"):
         links.append(obj.get("link", ""))
     loader = AsyncHtmlLoader(links)
     load: list[Document] = loader.load()
     for doc in load:
-        # remove js and html
-        soup = BeautifulSoup(doc.page_content or "", "html.parser")
-        doc.page_content = soup.get_text(strip=True)
-        result.append(doc)
-    return result
+        parsed = BeautifulSoup(doc.page_content or "", "html.parser")
+        result.append(
+            {
+                "source": doc.metadata.get("source", ""),
+                "title": doc.metadata.get("title", ""),
+                "language": doc.metadata.get("language", ""),
+                "page_content": parsed.get_text(strip=True),
+            }
+        )
+    return json.dumps(result)
 
 
 def v2() -> AgentExecutor:
@@ -38,12 +46,42 @@ def v2() -> AgentExecutor:
     return initialize_agent(
         tools,
         llm,
-        agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
+        agent=AgentType.SELF_ASK_WITH_SEARCH,
         verbose=True,
     )
 
 
 if __name__ == "__main__":
-    # res = v1()
-    res = v2().arun("Get latest crypto news")
-    print(res)
+    res = v1()
+    # res = v2().arun("Get latest crypto news")
+    print(
+        llm.invoke(
+            f"""
+You are able to understand JSON formatting.
+Here is a list of json objects holding latest news:
+
+{res}
+
+Create list of latest news.
+One news record per unique source.
+Try to assume date from provided source url or news content.
+Notes contains (if mentioned about):
+- names of cryptocurrencies
+- names of stork market assets
+- names of financial institutions
+- name of new financial laws
+Title is a 6 words page_content summary.
+Body is a 4 sentence page_content summary.
+
+Every news block should look as follows:
+
+## [title]
+
+[body]
+
+- Date: [date]
+- Source: [url]
+- Notes: [notes]
+"""
+        )
+    )
