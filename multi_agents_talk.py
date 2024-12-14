@@ -34,9 +34,16 @@ def process(task: str) -> ChatResult:
     sme = get_sme(config)
     dev = get_dev(config)
     qa = get_qa(config)
-
+    allowed_transitions = {
+        lead: [qa, dev, sme],
+        qa: [lead],
+        dev: [lead],
+        sme: [lead],
+    }
     group_chat = GroupChat(
         agents=[lead, qa, dev, sme],
+        allowed_or_disallowed_speaker_transitions=allowed_transitions,
+        speaker_transitions_type="allowed",
         messages=[],
         # max_round=6,
         speaker_selection_method="round_robin",
