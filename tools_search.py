@@ -44,6 +44,6 @@ def v2() -> AgentExecutor:
 
 
 if __name__ == "__main__":
-    res = v1()
-    # res = v2().arun("Get me latest crypto news")
+    # res = v1()
+    res = v2().arun("Get latest crypto news")
     print(res)

@@ -10,29 +10,32 @@ DOCUMENTS = [
     "IT security is one of my strongest passions. I find it rewarding to analyze and strengthen software against vulnerabilities, understanding how development choices can expose systems to risks like reverse-engineering or unauthorized modification. This mindset informs my approach to designing secure, resilient solutions.",
     "Another area of deep interest is artificial intelligence, which I believe is reshaping the world. This curiosity has driven me to explore Rust, further diversifying my technical skill set.",
 ]
+CLIENT = chromadb.Client()
+
+
+def response(prompt: str):
+    return ollama.embeddings(prompt=prompt, model="mxbai-embed-large")
 
 
 def store(collection: Collection):
-    for idx, dta in enumerate(DOCUMENTS):
-        response = ollama.embeddings(model="mxbai-embed-large", prompt=dta)
-        embedding = response["embedding"]
-        collection.add(ids=[str(idx)], embeddings=[embedding], documents=[dta])
+    for key, val in enumerate(DOCUMENTS):
+        embedding = response(val).get("embedding", "")
+        collection.add(ids=[str(key)], embeddings=[embedding], documents=[val])
 
 
 def retrieve(collection: Collection, prompt: str):
-    response = ollama.embeddings(prompt=prompt, model="mxbai-embed-large")
-    results = collection.query(query_embeddings=[response["embedding"]], n_results=3)
+    embedding = response(prompt).get("embedding", "")
+    results = collection.query(query_embeddings=[embedding], n_results=3)
     return results["documents"][0]
 
 
 if __name__ == "__main__":
-    client = chromadb.Client()
-    collection = client.create_collection(name="tomaj")
-    store(collection)
-    prompt = "What language does he know?"
-    data = retrieve(collection, prompt)
+    documents = CLIENT.create_collection(name="tomaj")
+    store(documents)
+    prompt = "What languages does he know?"
+    resp = retrieve(documents, prompt)
     output = ollama.generate(
         model="llama3.2",
-        prompt=f"Using this data: {data}. Respond to this prompt: {prompt}",
+        prompt=f"Using this data: {resp}. Respond to this prompt: {prompt}",
     )
     print(output.response)

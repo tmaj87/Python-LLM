@@ -27,7 +27,6 @@ def get_lead(config: Dict[str, str]) -> AssistantAgent:
     You present them with a task received from supervisor and assist on every step protecting overall composition of provided solution.
     You give them equal chance to provide input, although you have your own ranking of best performer based on previous observations.
     You try to summarise and round up ideas of your team so that they could be easily communicated to the supervisor.
-    If every bit of work is completed you say {MAGIC_WORD}.
     """
     return get_generic_agent(config, name, system_message)
 
@@ -79,6 +78,6 @@ def get_generic_agent(
         name=name,
         system_message=system_message,
         llm_config=llm_config,
-        is_termination_msg=is_termination_msg,
-        max_consecutive_auto_reply=REPLAYS,
+        # is_termination_msg=is_termination_msg,
+        # max_consecutive_auto_reply=REPLAYS,
     )
