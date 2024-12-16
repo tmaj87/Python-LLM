@@ -1,7 +1,9 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_ollama import OllamaLLM
 
-llm = OllamaLLM(model="llama3.2")
+llama_3_2 = OllamaLLM(model="llama3.2")
+qwen_2_5_instruct = OllamaLLM(model="qwen2.5:32b-instruct")
+qwq = OllamaLLM(model="qwq:32b")
 prompt = ChatPromptTemplate.from_messages(
     [
         (
@@ -13,7 +15,7 @@ prompt = ChatPromptTemplate.from_messages(
         MessagesPlaceholder(variable_name="messages"),
     ]
 )
-generate = prompt | llm
+generate = prompt | qwen_2_5_instruct
 
 reflection_prompt = ChatPromptTemplate.from_messages(
     [
@@ -26,4 +28,27 @@ reflection_prompt = ChatPromptTemplate.from_messages(
         MessagesPlaceholder(variable_name="messages"),
     ]
 )
-reflect = reflection_prompt | llm
+reflect = reflection_prompt | qwen_2_5_instruct
+
+
+def crypto_news_template(news_payload: str):
+    return f"""
+    Here is a list of JSON objects holding latest news:
+
+    {news_payload}
+
+    Whenever some updates are required, please use latest version.
+    Every news block should look as follows:
+
+    ## title (from object)
+
+    6 sentence page_content (from object) summary
+
+    - Date - asses date from provided news content
+    - Source - source (from object; as url)
+    - Highlights - contains sections about:
+        - cryptocurrencies (When section is present, provide exact names involved. Hide section when there's no relevant information.)
+        - stork market (When section is present, provide exact names involved. Hide section when there's no relevant information.)
+        - financial institutions (When section is present, provide exact names involved. Hide section when there's no relevant information.)
+        - financial regulations (When section is present, provide exact names involved. Hide section when there's no relevant information.)
+    """
