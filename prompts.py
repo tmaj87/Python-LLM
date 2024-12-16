@@ -1,5 +1,6 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_ollama import OllamaLLM
+from pygments import highlight
 
 llama_3_2 = OllamaLLM(model="llama3.2")
 qwen_2_5_instruct = OllamaLLM(model="qwen2.5:32b-instruct")
@@ -32,6 +33,7 @@ reflect = reflection_prompt | qwen_2_5_instruct
 
 
 def crypto_news_template(news_payload: str):
+    highlight_condition = "When section is present, provide exact names involved. Hide section when there's no relevant information."
     return f"""
     Here is a list of JSON objects holding latest news:
 
@@ -47,8 +49,8 @@ def crypto_news_template(news_payload: str):
     - Date - asses date from provided news content
     - Source - source (from object; as url)
     - Highlights - contains sections about:
-        - cryptocurrencies (When section is present, provide exact names involved. Hide section when there's no relevant information.)
-        - stork market (When section is present, provide exact names involved. Hide section when there's no relevant information.)
-        - financial institutions (When section is present, provide exact names involved. Hide section when there's no relevant information.)
-        - financial regulations (When section is present, provide exact names involved. Hide section when there's no relevant information.)
+        - cryptocurrencies ({highlight_condition})
+        - stork market ({highlight_condition})
+        - financial institutions ({highlight_condition})
+        - financial regulations ({highlight_condition})
     """
