@@ -67,7 +67,7 @@ if __name__ == "__main__":
     We are ending year 2024 and there are no approaching contracts to fulfill in the next yet.
     We need to try to find a way to sustain our revenuer growth, an investment to put money into, a partner in US or UK to sign contract with.
     Put all your effort into it, as our and our families lives depend on it.
-    Find that opportunity! 
+    Find that opportunity!
     """
     )
     print(result)

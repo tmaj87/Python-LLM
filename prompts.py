@@ -4,7 +4,7 @@ from pygments import highlight
 
 llama_3_2 = OllamaLLM(model="llama3.2")
 qwen_2_5_instruct = OllamaLLM(model="qwen2.5:32b-instruct")
-qwq = OllamaLLM(model="qwq:32b")
+deepseek = OllamaLLM(model="deepseek-r1:32b")
 prompt = ChatPromptTemplate.from_messages(
     [
         (

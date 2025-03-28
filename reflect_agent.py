@@ -59,4 +59,5 @@ if __name__ == "__main__":
         },
         config={"configurable": {"thread_id": 8169}},
     )
+    print(final_state)
     print(final_state["messages"][-1].content)

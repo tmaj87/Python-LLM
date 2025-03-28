@@ -7,7 +7,7 @@ from langchain_community.document_loaders import AsyncHtmlLoader
 from langchain_community.tools import DuckDuckGoSearchResults
 from langchain_core.documents import Document
 
-from prompts import qwen_2_5_instruct, crypto_news_template
+from prompts import crypto_news_template, deepseek
 
 os.environ["USER_AGENT"] = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0"
@@ -42,7 +42,7 @@ def news_payload() -> str:
 
 
 if __name__ == "__main__":
-    news = qwen_2_5_instruct.invoke(crypto_news_template(news_payload()))
+    news = deepseek.invoke(crypto_news_template(news_payload()))
     with open(
         "news/" + datetime.today().strftime("%Y-%m-%d_%H-%M-%S_news.md"),
         "w",
