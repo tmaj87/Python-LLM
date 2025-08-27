@@ -4,12 +4,12 @@ from pygments import highlight
 
 llama_3_2 = OllamaLLM(model="llama3.2")
 qwen_2_5_instruct = OllamaLLM(model="qwen2.5:32b-instruct")
-deepseek = OllamaLLM(model="deepseek-r1:32b")
+qwq = OllamaLLM(model="qwq:32b")
 prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "You are an essay assistant tasked with writing excellent 5-paragraph essays."
+            "You are an essay writer tasked with writing excellent 5-paragraph essays."
             "Generate the best essay imaginable for the user's request."
             "If the user provides critique, respond with a revised version of your previous attempts.",
         ),
@@ -22,9 +22,8 @@ reflection_prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "You are a teacher grading an essay submission."
-            "Generate critique and recommendations for the user's submission."
-            "Provide detailed recommendations, including requests for length, depth, style, etc.",
+            "You are owner and editor of well prospering news paper."
+            "Provide detailed text review and remarks for the user's submission."
         ),
         MessagesPlaceholder(variable_name="messages"),
     ]
@@ -50,7 +49,7 @@ def crypto_news_template(news_payload: str):
     - Source - source (from object; as url)
     - Highlights - contains sections about:
         - cryptocurrencies ({highlight_condition})
-        - stork market ({highlight_condition})
+        - stock market ({highlight_condition})
         - financial institutions ({highlight_condition})
         - financial regulations ({highlight_condition})
     """

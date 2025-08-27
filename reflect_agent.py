@@ -30,15 +30,16 @@ def reflection_node(state: State) -> State:
 
 
 def should_continue(state: State):
-    if len(state["messages"]) > 6:
-        # End after 3 iterations
+    class Consts:
+        MAX_ITERATIONS = 6
+
+    if len(state["messages"]) > Consts.MAX_ITERATIONS:
         return END
     return "reflect"
 
 
 def graph_builder():
     builder = StateGraph(State)
-    StateGraph(State)
     builder.add_node("generate", generation_node)
     builder.add_node("reflect", reflection_node)
     builder.add_edge(START, "generate")
@@ -57,7 +58,5 @@ if __name__ == "__main__":
                 )
             ],
         },
-        config={"configurable": {"thread_id": 8169}},
     )
-    print(final_state)
     print(final_state["messages"][-1].content)
